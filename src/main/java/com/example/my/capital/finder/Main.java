@@ -8,6 +8,7 @@ import java.net.http.HttpResponse;
 import java.util.Scanner;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
@@ -18,25 +19,37 @@ public class Main {
 
         Scanner scnr = new Scanner(System.in);
 
-        System.out.println("please enter an country or enter 'exit' to exit the program.");
+        while (true) {
 
-        String userInput = scnr.nextLine();
+            System.out.println("please enter an country or enter 'exit' to exit the program.");
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest req = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(url + userInput))
-                .build();
+            String userInput = scnr.nextLine();
 
-        HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
+            if (userInput.equalsIgnoreCase("exit")) {
+                break;
+            }
 
-        JSONArray jsonArray = new JSONArray(response.body());
-        JSONObject jsonObject = jsonArray.getJSONObject(0);
-        JSONArray capitalArray = jsonObject.getJSONArray("capital");
-        String capital = capitalArray.getString(0);
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest req = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(url + userInput))
+                    .build();
 
-        System.out.println("The capital city is: " + capital);
+            HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
+
+            try {
+
+                JSONArray jsonArray = new JSONArray(response.body());
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                JSONArray capitalArray = jsonObject.getJSONArray("capital");
+                String capital = capitalArray.getString(0);
+
+                System.out.println("The capital city of " + userInput + " is: " + capital);
+            } catch (JSONException e) {
+                System.out.println(userInput + " Not found");
+            }
+
+        }
 
     }
-
 }
