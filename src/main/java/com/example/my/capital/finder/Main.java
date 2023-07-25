@@ -7,6 +7,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Scanner;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -27,7 +30,12 @@ public class Main {
 
         HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.body());
+        JSONArray jsonArray = new JSONArray(response.body());
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        JSONArray capitalArray = jsonObject.getJSONArray("capital");
+        String capital = capitalArray.getString(0);
+
+        System.out.println("The capital city is: " + capital);
 
     }
 
